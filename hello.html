@@ -1,12 +1,432 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>
-            Hello!
-        </title>
-    </head>
-    <h1 style="color: blue;">Welcome to My Web Page!</h1>
-    <h2>Hello there</h2>
-    <h3>how are you</h3>
-    <body>Hello, World!</body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPP Progress Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .department-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .department-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .department-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .department-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .engineering { color: #3498db; }
+        .procurement { color: #e74c3c; }
+        .production { color: #2ecc71; }
+
+        .department-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .progress-container {
+            margin: 1rem 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 5px;
+        }
+
+        .engineering .progress-fill { background-color: #3498db; }
+        .procurement .progress-fill { background-color: #e74c3c; }
+        .production .progress-fill { background-color: #2ecc71; }
+
+        .task-list {
+            margin-top: 1rem;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-checkbox {
+            margin-right: 0.5rem;
+        }
+
+        .task-text {
+            flex: 1;
+        }
+
+        .task-text.completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .add-task {
+            margin-top: 1rem;
+        }
+
+        .add-task input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .btn.engineering { background-color: #3498db; }
+        .btn.procurement { background-color: #e74c3c; }
+        .btn.production { background-color: #2ecc71; }
+
+        .btn.engineering:hover { background-color: #2980b9; }
+        .btn.procurement:hover { background-color: #c0392b; }
+        .btn.production:hover { background-color: #27ae60; }
+
+        .summary {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .overall-progress {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EPP Progress Tracker</h1>
+            <p class="subtitle">Engineering • Procurement • Production</p>
+        </header>
+
+        <div class="dashboard">
+            <!-- Engineering Department -->
+            <div class="department-card engineering">
+                <div class="department-header">
+                    <div class="department-icon">⚙️</div>
+                    <div class="department-title">Engineering</div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Overall Progress</span>
+                        <span id="engineering-percentage">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="engineering-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="task-list" id="engineering-tasks">
+                    <!-- Tasks will be added here -->
+                </div>
+                <div class="add-task">
+                    <input type="text" id="engineering-input" placeholder="Add new engineering task...">
+                    <button class="btn engineering" onclick="addTask('engineering')">Add Task</button>
+                </div>
+            </div>
+
+            <!-- Procurement Department -->
+            <div class="department-card procurement">
+                <div class="department-header">
+                    <div class="department-icon">📦</div>
+                    <div class="department-title">Procurement</div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Overall Progress</span>
+                        <span id="procurement-percentage">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="procurement-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="task-list" id="procurement-tasks">
+                    <!-- Tasks will be added here -->
+                </div>
+                <div class="add-task">
+                    <input type="text" id="procurement-input" placeholder="Add new procurement task...">
+                    <button class="btn procurement" onclick="addTask('procurement')">Add Task</button>
+                </div>
+            </div>
+
+            <!-- Production Department -->
+            <div class="department-card production">
+                <div class="department-header">
+                    <div class="department-icon">🏭</div>
+                    <div class="department-title">Production</div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Overall Progress</span>
+                        <span id="production-percentage">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="production-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="task-list" id="production-tasks">
+                    <!-- Tasks will be added here -->
+                </div>
+                <div class="add-task">
+                    <input type="text" id="production-input" placeholder="Add new production task...">
+                    <button class="btn production" onclick="addTask('production')">Add Task</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary">
+            <div class="overall-progress" id="overall-progress">0%</div>
+            <p>Overall Project Progress</p>
+        </div>
+    </div>
+
+    <script>
+        // Data structure to store tasks
+        let departments = {
+            engineering: [],
+            procurement: [],
+            production: []
+        };
+
+        // Load data from localStorage on page load
+        function loadData() {
+            const saved = localStorage.getItem('eppTracker');
+            if (saved) {
+                departments = JSON.parse(saved);
+                renderAllTasks();
+                updateAllProgress();
+            } else {
+                // Initialize with sample tasks
+                departments = {
+                    engineering: [
+                        { text: 'Design system architecture', completed: true },
+                        { text: 'Create technical specifications', completed: true },
+                        { text: 'Develop prototype', completed: false },
+                        { text: 'Conduct testing', completed: false }
+                    ],
+                    procurement: [
+                        { text: 'Source raw materials', completed: true },
+                        { text: 'Negotiate supplier contracts', completed: false },
+                        { text: 'Quality assurance setup', completed: false }
+                    ],
+                    production: [
+                        { text: 'Setup production line', completed: false },
+                        { text: 'Train operators', completed: false },
+                        { text: 'Quality control implementation', completed: false }
+                    ]
+                };
+                saveData();
+                renderAllTasks();
+                updateAllProgress();
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('eppTracker', JSON.stringify(departments));
+        }
+
+        // Add new task
+        function addTask(department) {
+            const input = document.getElementById(`${department}-input`);
+            const text = input.value.trim();
+            
+            if (text) {
+                departments[department].push({ text, completed: false });
+                input.value = '';
+                saveData();
+                renderTasks(department);
+                updateProgress(department);
+                updateOverallProgress();
+            }
+        }
+
+        // Toggle task completion
+        function toggleTask(department, index) {
+            departments[department][index].completed = !departments[department][index].completed;
+            saveData();
+            renderTasks(department);
+            updateProgress(department);
+            updateOverallProgress();
+        }
+
+        // Render tasks for a department
+        function renderTasks(department) {
+            const container = document.getElementById(`${department}-tasks`);
+            container.innerHTML = '';
+            
+            departments[department].forEach((task, index) => {
+                const taskElement = document.createElement('div');
+                taskElement.className = 'task-item';
+                taskElement.innerHTML = `
+                    <input type="checkbox" class="task-checkbox" 
+                           ${task.completed ? 'checked' : ''} 
+                           onchange="toggleTask('${department}', ${index})">
+                    <span class="task-text ${task.completed ? 'completed' : ''}">${task.text}</span>
+                `;
+                container.appendChild(taskElement);
+            });
+        }
+
+        // Render all tasks
+        function renderAllTasks() {
+            Object.keys(departments).forEach(renderTasks);
+        }
+
+        // Update progress for a department
+        function updateProgress(department) {
+            const tasks = departments[department];
+            const completed = tasks.filter(task => task.completed).length;
+            const total = tasks.length;
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            document.getElementById(`${department}-progress`).style.width = `${percentage}%`;
+            document.getElementById(`${department}-percentage`).textContent = `${percentage}%`;
+        }
+
+        // Update all progress bars
+        function updateAllProgress() {
+            Object.keys(departments).forEach(updateProgress);
+            updateOverallProgress();
+        }
+
+        // Update overall progress
+        function updateOverallProgress() {
+            let totalTasks = 0;
+            let completedTasks = 0;
+            
+            Object.values(departments).forEach(dept => {
+                totalTasks += dept.length;
+                completedTasks += dept.filter(task => task.completed).length;
+            });
+            
+            const overallPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            document.getElementById('overall-progress').textContent = `${overallPercentage}%`;
+        }
+
+        // Handle Enter key in input fields
+        document.addEventListener('DOMContentLoaded', function() {
+            ['engineering', 'procurement', 'production'].forEach(dept => {
+                const input = document.getElementById(`${dept}-input`);
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        addTask(dept);
+                    }
+                });
+            });
+            
+            loadData();
+        });
+    </script>
+</body>
 </html>
